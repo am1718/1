@@ -1,0 +1,42 @@
+package java_lab;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Prompt_that_user_for_three_name_4 {
+
+    public static void main(String[] args) {
+        ArrayList<String> namelist = new ArrayList<>(); 
+        Scanner s = new Scanner(System.in);       
+        for (int i = 1; i <= 3; i++) {
+            System.out.println("Enter name " + i + ":");
+            String name = s.nextLine();
+            namelist.add(name); 
+        }
+        System.out.println("Number of elements in the ArrayList: " + namelist.size());
+   
+        for (int i = 4; i <= 5; i++) {
+            System.out.println("Enter name " + i + ":");
+            String name = s.nextLine();
+            namelist.add(name); 
+        }
+        System.out.println("Number of elements in the updated ArrayList: " + namelist.size());
+        System.out.println("Names in the ArrayList:");
+        for (String name : namelist) {
+            System.out.println(name);
+        }        
+        System.out.println("Enter a name to remove:");
+        String nameToRemove = s.nextLine();
+        if (namelist.remove(nameToRemove)) {
+            System.out.println("Name removed successfully.");
+        } else {
+            System.out.println("Name not found in the list.");
+        }      
+        System.out.println("Names in the updated ArrayList:");
+        for (String name : namelist) {
+            System.out.println(name);
+        }
+
+        s.close(); 
+    }
+}
