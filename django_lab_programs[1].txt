@@ -1,0 +1,261 @@
+6.Create a project in a web framework like Django involves setting up the basic structure and configuration for your web application.
+ a. Project Creation
+ b. APP creation 
+and use of admin app.                                                                                                                                                                                                              
+
+creation of a project:--
+Syntax--> django-admin startproject projectname .
+EX--> django-admin startproject p1 .
+"project is a collection of applications"
+
+creation of application:--
+Syntax--> django-admin startproject applicationname
+EX--> django-admin startproject a1 .
+"application is a individual functionality,which is a part of project"
+
+
+creation of admin:--
+
+py manage.py create superuser
+
+username: _____
+email:______
+password:______
+confirmpassword:_____
+Y/N:____
+
+
+project--
+             -->settings.py (this file is related to all configuration for entire project)
+
+***
+7.URL mapping, dynamic URL mapping, and views are fundamental concepts in web development particularly in frameworks like Django (Python).
+ a.URL mapping (creation).
+ b. Dynamic URL mapping.
+ c. views.
+
+a-->URL Mapping is a concept used to create urls, for each and every views inside the application.
+Syntax-->
+(In urls.py) 
+path('url_name/',views.view_name)
+
+b-->Dynamic URL mapping is the same way like URL Mapping, which is used to send values(data) into views dynamically.
+Syntax-->
+path('url_name/<data>',views.view_name)
+
+c--> Views is the file which is present inside the application, which we are used to write business logic.
+Syntax-->(normal url mapping)
+def view_name(request):
+    return(response)
+Syntax-->(Dynamic url mapping)
+def view_name(request,data):
+    return(response)
+
+***
+8.In Django project create,
+ a. Interface between controller (urls.py & views.py) files.
+b. Http Request and Responses.
+
+urls.py-->
+from django.contrib import admin
+from django.urls import path
+from a8 import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('new/',views.new),
+    path('user/',views.user),
+    path('dynamic_user/<name>/',views.dynamic_user)
+]
+
+views.py-->
+from django.shortcuts import render,HttpResponse
+
+# Create your views here.
+def new(request):
+    return HttpResponse('Hi,this is a new website')
+def user(request):
+    return HttpResponse('Welcome to the new user')
+def dynamic_user(request,name):
+    return HttpResponse(f'Hi,{name}')
+
+9.Create a Database Connectivity and Database Migrations with SQLite using python.
+
+Database is used to store data inside a table ,and table inside it.
+(In django ,we will get SqLite3 database by default ,if we want to connect with some other databases,we have to configure it inside the settings.py)
+
+to create a table -->>
+in models.py,
+Syntax-->
+class TABLENAME(models.Model):
+  col1=models.Charfield(max_length=10)
+  col2=models.Integerfield()
+
+commands-->
+py manage.py makemigrations
+py manage.py migrate
+
+***
+10.Using Django perform CRU operations and Messages(response) generation.
+templates : 'DIRS': [BASE_DIR/'templates'],
+first we need to create a table to store the data in the database
+to create -->
+in models.py
+from django.db import models
+
+class Student_form(models.Model):
+    sname=models.CharField(max_length=50)
+    sage=models.BigIntegerField()
+    saddress=models.CharField(max_length=100)
+
+then,
+
+python manage.py makemigrations
+python manage.py migrate
+
+After , in views.py create the functions(which define the logic)
+
+from django.shortcuts import render
+from a10.models import Student_form
+from django.http import HttpResponse
+
+# Create your views here.
+def insert(request):
+    if request.method =='POST':
+        sname=request.POST['sname']
+        sage=request.POST['sage']
+        saddress=request.POST['saddress']
+        Student_form.objects.create(sname=sname,sage=sage,saddress=saddress)
+
+        return HttpResponse("Student data added successfully")
+
+    return render(request,'insert.html')
+
+def read(request):
+    data=Student_form.objects.all()
+    return render(request,'read.html',{'data':data})
+
+def update(request,num):
+    if request.method =='POST':
+        sname=request.POST['sname']
+        sage=request.POST['sage']
+        saddress=request.POST['saddress']
+        Student_form.objects.filter(id=num).update(sname=sname,sage=sage,saddress=saddress)
+
+        return HttpResponse("Student data updated successfully")
+
+    return render(request,'update.html')
+
+def delete(request,num):
+    student=Student_form.objects.filter(id=num).delete()
+    return HttpResponse("Student data deleted successfully")
+
+
+Now let us create the urls for the above functions in urls.py-->
+from django.contrib import admin
+from django.urls import path
+from a10 import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('insert/',views.insert),
+    path('read/',views.read),
+    path('update/<num>/',views.update),
+    path('delete/<num>/',views.delete)
+]
+
+
+Now, create html files in templates folder for above functions, such that we can perform CRUD operations on database,through interactive webpage
+insert.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <label>Student_name:</label>
+        <input type="text" name="sname">
+        <label>Student_age:</label>
+        <input type="number" name="sage">
+        <label>Student_address:</label>
+        <input type="text" name="saddress">
+        <input type="submit" value="submit">
+    </form> </form>
+</body>
+</html>
+
+read.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table{
+            border: 10px;border-color:black;border-style:double;background-color:aqua;
+        }
+        tr{
+            background-color:aqua;border:3px;border-color: rgb(9, 255, 0);
+        }
+        th,td{
+            border: 2px;border-style:double;border-color: black;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <tr >
+            <th>NAME</th>
+            <th>AGE</th>
+            <th>ADDRESS</th>
+        </tr>
+          {% for record in data %}
+          <tr>
+            <td>{{record.sname}}</td>
+            <td>{{record.sage}}</td>
+            <td>{{record.saddress}}</td>
+          </tr>
+          {% endfor %}
+    </table>
+</body>
+</html>
+
+update.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <label>Student_name:</label>
+        <input type="text" name="sname">
+        <label>Student_age:</label>
+        <input type="number" name="sage">
+        <label>Student_address:</label>
+        <input type="text" name="saddress">
+        <input type="submit" value="update">
+    </form> </form>
+</body>
+</html>
+
+now run the server -->
+python manage.py runserver
+
+now go to the browser,and enter the generated url from the server,and perform the operations,and may result in changes in the database.
+
+***
+
+
+
+
+
+
+
